@@ -6,7 +6,7 @@ const client = new Client({
   cloud: {
     secureConnectBundle: "C:\\Users\\rutur\\OneDrive\\Desktop\\SuperMindHackathonAssignment\\secure-connect-social-media-performance.zip", 
   },
-  credentials: { username: 'vbCxJNYJrKJkEpXxRhHGPblE', password: 'tMhU9TfJJUnCuOxFIYS7i_nRRSy40PZTnJ8t+dUSOo+qrD,A,K.Qe.A3Zed.qiTZwLLggp9rdcbrYHjjaT9q1YyalwYDZbzhuHRB6.Y6-.rZLEMhyJggdTEshaRR46iR' },
+  credentials: { username: 'OjAFPrPddfjXJNYyqKQzJQEi', password: 'Sev7eTFQnkm,6FJUzSMZCUbZSa6uUfgxIusoN+6O0ewZNkHB5qKrUZMIcZHCd_jJoKdkUt8zOwOZRk_n6kMFCl6,KA0SOdZj1z5dghxpkLtxLjIKZCpU7PGg1g7SLCv+' },
   keyspace: 'default_keyspace', 
 });
 
@@ -60,19 +60,26 @@ const generateRandomPostData = (num) => {
 // Function to insert posts data into the database
 const insertPostsData = async (posts) => {
   try {
-    const query = 'INSERT INTO posts (post_id, user_id, title, type, created_at, tags, likes, shares, comments) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+
+    const queryToEmpty = "TRUNCATE posts";
+    await client.execute(queryToEmpty);
+
+    const queryToInsert = 'INSERT INTO posts (post_id, user_id, title, type, created_at, tags, likes, shares, comments) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
     
     // Loop through each post and insert into the database
     for (const post of posts) {
+
       const { post_id, user_id, title, type, created_at, tags, likes, shares, comments } = post;
 
       // Execute the query with the post data
-      await client.execute(query, [post_id, user_id, title, type, created_at, tags, likes, shares, comments], { prepare: true });
+      await client.execute(queryToInsert, [post_id, user_id, title, type, created_at, tags, likes, shares, comments], { prepare: true });
+
       console.log(`Inserted post with ID: ${post_id}`);
     }
   } catch (err) {
     console.error('Error inserting data into Astra DB:', err);
   }
+
 };
 
 // Generate 50 posts and insert them into the database
